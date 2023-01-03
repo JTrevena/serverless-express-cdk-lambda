@@ -26,14 +26,24 @@ export class ExpressLambdaStack extends cdk.Stack {
     });
     api.root.addMethod("GET", getWidgetsIntegration);
 
-    // add single lambda function to '/test' endpoint
+    // add lambda functions directly to '/test' endpoint
 
-    const testLambda = new lambda.Function(this, 'testLambda', {
+    const test = api.root.addResource("test");
+
+    const testHelloWorldLambda = new lambda.Function(this, 'testHelloWorld', {
       runtime: lambda.Runtime.NODEJS_16_X,
-      handler: 'index.lambdaHandler',
+      handler: 'testHelloWorld.lambdaHandler',
       code: lambda.Code.fromAsset(path.join(__dirname, '../src/test')),
     })
-    const test = api.root.addResource("test");
-    test.addMethod("GET", new apigateway.LambdaIntegration(testLambda))
+    const testHelloWorld = test.addResource("hello");
+    testHelloWorld.addMethod("GET", new apigateway.LambdaIntegration(testHelloWorldLambda))
+
+    const testJSONLambda = new lambda.Function(this, 'testJSONLambda', {
+      runtime: lambda.Runtime.NODEJS_16_X,
+      handler: 'testJSON.lambdaHandler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../src/test')),
+    })
+    const testJSON = test.addResource("json")
+    testJSON.addMethod("GET", new apigateway.LambdaIntegration(testJSONLambda))
   }
 }
