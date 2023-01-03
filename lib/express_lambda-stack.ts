@@ -11,7 +11,7 @@ export class ExpressLambdaStack extends cdk.Stack {
 
     const lambdaFunc = new lambda.Function(this, 'MyFunction', {
       runtime: lambda.Runtime.NODEJS_16_X,
-      handler: 'src/index.lambdaHandler',
+      handler: 'index.lambdaHandler',
       code: lambda.Code.fromAsset(path.join(__dirname, '../src')),
     });
 
@@ -20,10 +20,14 @@ export class ExpressLambdaStack extends cdk.Stack {
       description: "This service serves widgets."
     });
 
-    const getWidgetsIntegration = new apigateway.LambdaIntegration(lambdaFunc, {
-      requestTemplates: { "application/json": '{ "statusCode": "200" }' }
-    });
+    // const getWidgetsIntegration = new apigateway.LambdaIntegration(lambdaFunc, {
+    //   requestTemplates: { "application/json": '{ "statusCode": "200" }' }
+    // });
 
-    api.root.addMethod("GET", getWidgetsIntegration);
+    // api.root.addMethod("GET", getWidgetsIntegration);
+
+    const test = api.root.addResource("test");
+
+    test.addMethod("GET", new apigateway.LambdaIntegration(lambdaFunc, {proxy: true}))
   }
 }
