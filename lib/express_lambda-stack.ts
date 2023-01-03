@@ -26,7 +26,7 @@ export class ExpressLambdaStack extends cdk.Stack {
     });
     api.root.addMethod("GET", getWidgetsIntegration);
 
-    // add lambda functions directly to '/test' endpoint
+    // add lambda functions directly to '/test/...' endpoints
 
     const test = api.root.addResource("test");
 
