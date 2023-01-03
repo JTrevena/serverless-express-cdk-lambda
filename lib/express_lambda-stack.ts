@@ -9,25 +9,31 @@ export class ExpressLambdaStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const lambdaFunc = new lambda.Function(this, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_16_X,
-      handler: 'index.lambdaHandler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../src')),
-    });
-
     const api = new apigateway.RestApi(this, "widgets-api", {
       restApiName: "Widget Service",
       description: "This service serves widgets."
     });
 
-    // const getWidgetsIntegration = new apigateway.LambdaIntegration(lambdaFunc, {
-    //   requestTemplates: { "application/json": '{ "statusCode": "200" }' }
-    // });
+    // add express app to '/' endpoint
+    
+    const appLambdaFunc = new lambda.Function(this, 'ServerlessApp', {
+      runtime: lambda.Runtime.NODEJS_16_X,
+      handler: 'index.lambdaHandler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../src/app')),
+    });
+    const getWidgetsIntegration = new apigateway.LambdaIntegration(appLambdaFunc, {
+      requestTemplates: { "application/json": '{ "statusCode": "200" }' }
+    });
+    api.root.addMethod("GET", getWidgetsIntegration);
 
-    // api.root.addMethod("GET", getWidgetsIntegration);
+    // add single lambda function to '/test' endpoint
 
+    const testLambda = new lambda.Function(this, 'testLambda', {
+      runtime: lambda.Runtime.NODEJS_16_X,
+      handler: 'index.lambdaHandler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../src/test')),
+    })
     const test = api.root.addResource("test");
-
-    test.addMethod("GET", new apigateway.LambdaIntegration(lambdaFunc, {proxy: true}))
+    test.addMethod("GET", new apigateway.LambdaIntegration(testLambda))
   }
 }
