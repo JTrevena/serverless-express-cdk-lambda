@@ -7,4 +7,5 @@ async function testJSONResponse(event) {
     }
   }
   
-  module.exports.lambdaHandler = testJSONResponse
+  module.exports.lambdaHandler = testJSONResponse;
+  

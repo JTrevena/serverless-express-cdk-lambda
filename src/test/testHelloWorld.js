@@ -5,4 +5,4 @@ async function helloWorld(event) {
   }
 }
 
-module.exports.lambdaHandler = helloWorld
+module.exports.lambdaHandler = helloWorld;

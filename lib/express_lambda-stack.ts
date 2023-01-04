@@ -14,7 +14,7 @@ export class ExpressLambdaStack extends cdk.Stack {
       description: "This service serves widgets."
     });
 
-    // add express app to '/' endpoint
+    // add express app to '/app' endpoint
     
     const appLambdaFunc = new lambda.Function(this, 'ServerlessApp', {
       runtime: lambda.Runtime.NODEJS_16_X,
@@ -24,7 +24,8 @@ export class ExpressLambdaStack extends cdk.Stack {
     const getWidgetsIntegration = new apigateway.LambdaIntegration(appLambdaFunc, {
       requestTemplates: { "application/json": '{ "statusCode": "200" }' }
     });
-    api.root.addMethod("GET", getWidgetsIntegration);
+    const app = api.root.addResource("app")
+    app.addMethod("GET", getWidgetsIntegration);
 
     // add lambda functions directly to '/test/...' endpoints
 
